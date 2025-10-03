@@ -20,12 +20,12 @@ export async function POST(req: NextRequest) {
   // RAG: embed + retrieve context (unchanged)
   const qvec = (await embeddings.embedDocuments([message]))[0];
   const { data: hits, error } = await supabase.rpc("match_chunks", {
-    query_embedding: qvec as any,
+    query_embedding: qvec as number[],
     in_agent_id: agentId,
     match_count: 8,
   });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  const context = (hits || []).map((h: any) => `• ${h.text}`).join("\n\n");
+  const context = (hits || []).map((h: { text: string }) => `• ${h.text}`).join("\n\n");
 
   // Stream with v3
   const result = await streamText({

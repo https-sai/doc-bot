@@ -19,7 +19,7 @@ export default function Home() {
 
   return (
     <main className="mx-auto max-w-md p-6 space-y-4">
-      <h1 className="text-2xl font-semibold">Docs Copilot</h1>
+      <h1 className="text-2xl font-semibold">DocBot</h1>
       <button onClick={signInMagic} className="button">
         Sign in via magic link
       </button>

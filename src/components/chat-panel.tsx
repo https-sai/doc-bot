@@ -2,12 +2,18 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
 
+interface Message {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+}
+
 export function ChatPanel({
   agentId,
   initialMessages,
 }: {
   agentId: string;
-  initialMessages: any[];
+  initialMessages: Message[];
 }) {
   const [msgs, setMsgs] = useState(initialMessages);
   const [input, setInput] = useState("");
@@ -21,7 +27,11 @@ export function ChatPanel({
     const text = input.trim();
     if (!text) return;
     setInput("");
-    const userMsg = { id: crypto.randomUUID(), role: "user", content: text };
+    const userMsg: Message = {
+      id: crypto.randomUUID(),
+      role: "user",
+      content: text,
+    };
     setMsgs((m) => [...m, userMsg]);
 
     const res = await fetch("/api/chat", {
@@ -30,11 +40,11 @@ export function ChatPanel({
     });
     const reader = res.body!.getReader();
     const decoder = new TextDecoder();
-    const aiMsg = {
+    const aiMsg: Message = {
       id: crypto.randomUUID(),
       role: "assistant",
       content: "",
-    } as any;
+    };
     setMsgs((m) => [...m, aiMsg]);
 
     while (true) {

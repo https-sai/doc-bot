@@ -30,13 +30,14 @@ export async function POST(req: NextRequest) {
     for (const p of pages) {
       const parts = await chunkText(p.content);
       const vecs = await embeddings.embedDocuments(parts);
-      const rows = parts.map((text, i) => ({ document_id: doc.id, text, embedding: vecs[i] as any }));
+      const rows = parts.map((text, i) => ({ document_id: doc.id, text, embedding: vecs[i] as number[] }));
       const { error } = await admin.from("chunks").insert(rows);
       if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
     return NextResponse.json({ ok: true, documentId: doc.id, pages: pages.length });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+  } catch (e: unknown) {
+    const error = e instanceof Error ? e.message : 'Unknown error occurred';
+    return NextResponse.json({ error }, { status: 500 });
   }
 }
